@@ -1,0 +1,20 @@
+name: census
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10.4
+  - numpy
+  - pandas
+  - scikit-learn
+  - pytest
+  - requests
+  - fastapi
+  - uvicorn
+  - gunicorn
+  - pandas-profiling
+  - seaborn
+  - git
+  - pip
+
+# conda create --name census --file requirements.txt --channel conda-forge
