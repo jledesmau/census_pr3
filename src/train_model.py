@@ -4,10 +4,15 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 from ml.data import process_data
-from ml.model import train_model, compute_model_metrics, inference
+from ml.model import train_model
+import joblib
+import os
+
+path_base = os.path.dirname(os.path.abspath(__file__))
+path_base = path_base.replace("src", "")
 
 # Loading the data
-data = pd.read_csv("../data/census.csv")
+data = pd.read_csv(path_base + "data/census.csv")
 data.replace("?", np.nan, inplace = True)
 data.dropna(inplace = True)
 
@@ -32,7 +37,14 @@ X_train, y_train, encoder, lb = process_data(
     label = "salary",
 )
 
-# Train and save a model
+# Training the model
 model = train_model(X_train, y_train)
 
+# Saving model and data processing objects
+outcomes = {"model": model,
+            "encoder": encoder,
+            "label_binarizer": lb}
+
+for name, outcome in outcomes.items():
+    joblib.dump(outcome, path_base + "model/" + name + ".pkl")
 

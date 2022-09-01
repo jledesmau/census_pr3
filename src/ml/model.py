@@ -1,11 +1,12 @@
 from sklearn.metrics import fbeta_score, precision_score, recall_score
-from 
+from sklearn.ensemble import RandomForestClassifier
+from .data import process_data
 
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train):
     """
-    Trains a machine learning model and returns it.
+    Trains a Random Forest classifiers model and returns it.
 
     Inputs
     ------
@@ -18,8 +19,9 @@ def train_model(X_train, y_train):
     model
         Trained machine learning model.
     """
+    model = RandomForestClassifier(random_state = 0).fit(X_train, y_train)
 
-    pass
+    return model
 
 
 def compute_model_metrics(y, preds):
@@ -44,18 +46,38 @@ def compute_model_metrics(y, preds):
     return precision, recall, fbeta
 
 
-def inference(model, X):
+def inference(data, model, encoder, lb):
     """ Run model inferences and return the predictions.
 
     Inputs
     ------
     model : ???
         Trained machine learning model.
-    X : np.array
+    data : np.ndarray
         Data used for prediction.
     Returns
     -------
-    preds : np.array
+    preds : np.ndarray
         Predictions from the model.
     """
-    pass
+
+    cat_features = [
+        "workclass",
+        "education",
+        "marital-status",
+        "occupation",
+        "relationship",
+        "race",
+        "sex",
+        "native-country",
+    ]
+
+    out_data = process_data(
+        data, cat_features,
+        training=False,
+        encoder=encoder,
+        lb=lb)
+
+    preds = model.predict(out_data[0])
+
+    return preds
