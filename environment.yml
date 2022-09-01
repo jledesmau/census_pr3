@@ -16,7 +16,6 @@ dependencies:
   - seaborn
   - git
   - flake8
-  - pytest
   - pip
 
 # conda create --name census --file requirements.txt --channel conda-forge
