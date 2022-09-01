@@ -1,6 +1,8 @@
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.ensemble import RandomForestClassifier
 from .data import process_data
+import numpy as np
+import pandas as pd
 
 
 # Optional: implement hyperparameter tuning.
@@ -46,14 +48,14 @@ def compute_model_metrics(y, preds):
     return precision, recall, fbeta
 
 
-def inference(data, model, encoder, lb):
+def inference(X, model):
     """ Run model inferences and return the predictions.
 
     Inputs
     ------
     model : ???
         Trained machine learning model.
-    data : np.ndarray
+    X : np.ndarray
         Data used for prediction.
     Returns
     -------
@@ -61,23 +63,30 @@ def inference(data, model, encoder, lb):
         Predictions from the model.
     """
 
-    cat_features = [
-        "workclass",
-        "education",
-        "marital-status",
-        "occupation",
-        "relationship",
-        "race",
-        "sex",
-        "native-country",
-    ]
-
-    out_data = process_data(
-        data, cat_features,
-        training=False,
-        encoder=encoder,
-        lb=lb)
-
-    preds = model.predict(out_data[0])
+    preds = model.predict(X)
 
     return preds
+
+
+def test_model_slices(test, X_test, y_test, feature, model):
+    """ Function for calculating model performance metrics on slices of categorical variables."""
+    
+    performance = {}
+
+    for cls in test[feature].unique():
+        # Rows of data
+        rows = test[test[feature] == cls].index.to_list()
+
+        X = X_test.take(rows, axis=0)
+        y = y_test.take(rows, axis=0)
+        preds = inference(X, model)
+
+        precision, recall, f1 = compute_model_metrics(y, preds)
+
+        performance[cls] = {
+            "Precision": precision,
+            "Recall": recall,
+            "F1": f1
+        }
+
+    return performance

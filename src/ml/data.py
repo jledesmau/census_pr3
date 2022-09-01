@@ -58,6 +58,8 @@ def process_data(
         lb = LabelBinarizer()
         X_categorical = encoder.fit_transform(X_categorical)
         y = lb.fit_transform(y.values).ravel()
+        X = np.concatenate([X_continuous, X_categorical], axis=1)
+        return X, y, encoder, lb
     else:
         X_categorical = encoder.transform(X_categorical)
         try:
@@ -65,6 +67,5 @@ def process_data(
         # Catch the case where y is None because we're doing inference.
         except AttributeError:
             pass
-
-    X = np.concatenate([X_continuous, X_categorical], axis=1)
-    return X, y, encoder, lb
+        X = np.concatenate([X_continuous, X_categorical], axis=1)
+        return X, y
