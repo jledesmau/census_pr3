@@ -1,43 +1,47 @@
-Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
+# Deploying a ML Model - Census Bureau Classifier
 
-# Environment Set up
-* Download and install conda if you don’t have it already.
-    * Use the supplied requirements file to create a new environment, or
-    * conda create -n [envname] "python=3.8" scikit-learn pandas numpy pytest jupyter jupyterlab fastapi uvicorn -c conda-forge
-    * Install git either through conda (“conda install git”) or through your CLI, e.g. sudo apt-get git.
+![](./images/census-map-of-people.jpg)
 
-## Repositories
-* Create a directory for the project and initialize git.
-    * As you work on the code, continually commit changes. Trained models you want to use in production must be committed to GitHub.
-* Connect your local git repo to GitHub.
-* Setup GitHub Actions on your repo. You can use one of the pre-made GitHub Actions if at a minimum it runs pytest and flake8 on push and requires both to pass without error.
-    * Make sure you set up the GitHub Action to have the same version of Python as you used in development.
+This project contains a Machine Learning that predicts whether income exceeds $50K/yr based on census data. The model is designed to be continuously integrated (CI) using Github Actions and continuously deployed (CD) using FastAPI and Heroku. Here we have the public links to this project's artifacts and code:
 
-# Data
-* Download census.csv and commit it to dvc.
-* This data is messy, try to open it in pandas and see what you get.
-* To clean it, use your favorite text editor to remove all spaces.
+* **Public Github repository**: [LINK](https://github.com/jledesmau/census_pr3)
 
-# Model
-* Using the starter code, write a machine learning model that trains on the clean data and saves the model. Complete any function that has been started.
-* Write unit tests for at least 3 functions in the model code.
-* Write a function that outputs the performance of the model on slices of the data.
-    * Suggestion: for simplicity, the function can just output the performance on slices of just the categorical features.
-* Write a model card using the provided template.
+* **Data source and information**: [LINK](https://archive.ics.uci.edu/ml/datasets/census+income)
 
-# API Creation
-*  Create a RESTful API using FastAPI this must implement:
-    * GET on the root giving a welcome message.
-    * POST that does model inference.
-    * Type hinting must be used.
-    * Use a Pydantic model to ingest the body from POST. This model should contain an example.
-   	 * Hint: the data has names with hyphens and Python does not allow those as variable names. Do not modify the column names in the csv and instead use the functionality of FastAPI/Pydantic/etc to deal with this.
-* Write 3 unit tests to test the API (one for the GET and two for POST, one that tests each prediction).
+The steps of the pipeline include:
 
-# API Deployment
-* Create a free Heroku account (for the next steps you can either use the web GUI or download the Heroku CLI).
-* Create a new app and have it deployed from your GitHub repository.
-    * Enable automatic deployments that only deploy if your continuous integration passes.
-    * Hint: think about how paths will differ in your local environment vs. on Heroku.
-    * Hint: development in Python is fast! But how fast you can iterate slows down if you rely on your CI/CD to fail before fixing an issue. I like to run flake8 locally before I commit changes.
-* Write a script that uses the requests module to do one POST on your live API.
+1. Downloading sample raw data (and loading it to W&B)
+2. Exploratory data analysis of the raw data
+3. Basic cleaning steps to obtain the clean sample
+4. Splitting the clean data into train-validation-step sections
+5. Trainig, validating and exporting a prediction model based on Random Forest
+6. Optimizing hyperparameters and selecting the best model
+7. Testing the model selected
+
+## Getting started
+
+Before running the pipeline, make sure to have conda installed and ready, then create a new environment using the `environment.yml` file provided in the root of the repository and activate it:
+
+```
+conda env create -f environment.yml
+conda activate nyc_airbnb_dev
+```
+
+Then make sure you are logged in to Weights & Biases. Get your API key from W&B by going to https://wandb.ai/authorize and click on the + icon (copy to clipboard), then paste your key into this command:
+
+```
+wandb login [your API key]
+```
+
+In order to run the entire pipeline when you are developing, you need to be in the root of the repository, then you can execute:
+
+```
+mlflow run .
+```
+
+To run only one or a set od steps, we can use the `steps` parameter on the command line:
+
+```
+mlflow run . -P steps=download
+mlflow run . -P steps=download,basic_cleaning
+```
