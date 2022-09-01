@@ -1,9 +1,13 @@
-python==3.8
+python==3.10.0
 numpy
 pandas
 scikit-learn
 pytest
 requests
-fastapi==0.63.0
+fastapi
 uvicorn
 gunicorn
+pandas-profiling
+seaborn
+
+# conda create --name census --file requirements.txt --channel conda-forge
