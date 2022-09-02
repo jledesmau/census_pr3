@@ -53,6 +53,13 @@ def main():
         slice_performances[feature] = test_model_slices(
             test, X_test, y_test, feature, model)
 
+    slice_metrics = pd.DataFrame.from_dict({(i,j): slice_performances[i][j]
+                                                for i in slice_performances.keys()
+                                                for j in slice_performances[i].keys()},
+                                                orient = 'index').rename_axis(('Features', 'Slices'))
+
+    slice_metrics.to_csv(path_base + "output/" + "slice_metrics.csv")
+
     # Printing and saving model performance
     performance_text = "OVERALL PERFORMANCE\n"
     performance_text += f"Precision: {overall_performance['Precision']}\n"
@@ -60,11 +67,7 @@ def main():
     performance_text += f"F1: {overall_performance['F1']}\n\n"
 
     performance_text += "PERFORMANCE PER SLICES\n"
-
-    performance_text += pd.DataFrame.from_dict({(i,j): slice_performances[i][j]
-                                                for i in slice_performances.keys()
-                                                for j in slice_performances[i].keys()},
-                                                orient = 'index').rename_axis(('Features', 'Slices')).to_string()
+    performance_text += slice_metrics.to_string()
     
     print(performance_text)
 
