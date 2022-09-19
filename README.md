@@ -8,15 +8,7 @@ This project contains a Machine Learning that predicts whether income exceeds $5
 
 * **Data source and information**: [LINK](https://archive.ics.uci.edu/ml/datasets/census+income)
 
-The steps of the pipeline include:
-
-1. Downloading sample raw data (and loading it to W&B)
-2. Exploratory data analysis of the raw data
-3. Basic cleaning steps to obtain the clean sample
-4. Splitting the clean data into train-validation-step sections
-5. Trainig, validating and exporting a prediction model based on Random Forest
-6. Optimizing hyperparameters and selecting the best model
-7. Testing the model selected
+* **Model card**: [LINK](https://github.com/jledesmau/census_pr3/blob/master/model_card.md)
 
 ## Getting started
 
